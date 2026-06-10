@@ -8,7 +8,7 @@ import 'package:galaxy_truck/screens/driver/return_truck_screen.dart';
 import 'package:galaxy_truck/screens/driver/report_damage_screen.dart';
 import 'package:galaxy_truck/screens/driver/request_maintenance_screen.dart';
 import 'package:galaxy_truck/screens/driver/driver_profile_screen.dart';
-import 'package:galaxy_truck/screens/driver/rental_history_screen.dart';
+import 'package:galaxy_truck/screens/driver/rental_history_sreen.dart';
 import 'package:galaxy_truck/screens/driver/driver_notifications_screen.dart';
 import 'package:galaxy_truck/screens/admin/admin_dashboard.dart';
 import 'package:galaxy_truck/screens/admin/trucks_screen.dart';
@@ -58,6 +58,11 @@ class AppRouter {
         name: 'request-maintenance',
         pageBuilder: (context, state) => const MaterialPage(child: RequestMaintenanceScreen()),
       ),
+            GoRoute(
+                      path: '/driver/request-service',
+                      name: 'request-service',
+                      pageBuilder: (context, state) => const MaterialPage(child: RequestMaintenanceScreen()),
+                    ),
       GoRoute(
         path: '/driver/profile',
         name: 'driver-profile',
