@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isSelf(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    // User profiles (private to the user, admin can manage)
+    match /users/{userId} {
+      allow get: if isSelf(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSelf(userId);
+      allow update, delete: if isSelf(userId) || isAdmin();
+    }
+
+    // Trucks (signed-in can read; admin can write)
+    match /trucks/{truckId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // Driver compliance/profile (owner + admin)
+    match /driver_profiles/{driverProfileId} {
+      allow get: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if signedIn();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    // Rentals (driver + admin)
+    match /rentals/{rentalId} {
+      allow get: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow list: if signedIn();
+      allow create: if signedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Inspections (driver + admin)
+    match /inspections/{inspectionId} {
+      allow get: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow list: if signedIn();
+      allow create: if signedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Damage reports (driver + admin)
+    match /damage_reports/{reportId} {
+      allow get: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow list: if signedIn();
+      allow create: if signedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Maintenance requests (driver + admin)
+    match /maintenance_requests/{requestId} {
+      allow get: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow list: if signedIn();
+      allow create: if signedIn() && request.resource.data.driverId == request.auth.uid;
+      allow update: if signedIn() && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Notifications (private to user, admin can write)
+    match /notifications/{notificationId} {
+      allow get: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow list: if signedIn();
+      allow create: if isAdmin() || (signedIn() && request.resource.data.userId == request.auth.uid);
+      allow update: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+  }
+}
