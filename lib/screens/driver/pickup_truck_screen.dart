@@ -316,11 +316,12 @@ class _PickUpTruckScreenState extends State<PickUpTruckScreen> {
 
   Future<void> _capturePhoto(String label) async {
     try {
+      final isOdometer = label.toLowerCase() == 'odometer';
       final file = await _picker.pickImage(
         source: ImageSource.camera,
         imageQuality: 80,
-        maxWidth: 1024,
-        maxHeight: 1024,
+        maxWidth: isOdometer ? 1920 : 1280,
+        maxHeight: isOdometer ? 1920 : 1280,
       );
       if (file == null) return;
 
