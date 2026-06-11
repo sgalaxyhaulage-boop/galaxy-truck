@@ -228,7 +228,12 @@ class _ReturnTruckScreenState extends State<ReturnTruckScreen> {
 
   Future<void> _capturePhoto(String label) async {
     try {
-      final file = await _picker.pickImage(source: ImageSource.camera, imageQuality: 85);
+      final file = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
       if (file == null) return;
       final bytes = await file.readAsBytes();
       final uri = _persistBytesAsImage(bytes);
