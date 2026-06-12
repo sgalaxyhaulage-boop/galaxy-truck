@@ -6,8 +6,27 @@ import 'package:galaxy_truck/services/truck_service.dart';
 import 'package:galaxy_truck/theme.dart';
 import 'package:provider/provider.dart';
 
-class ReportsScreen extends StatelessWidget {
+class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
+
+  @override
+  State<ReportsScreen> createState() => _ReportsScreenState();
+}
+
+class _ReportsScreenState extends State<ReportsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await Future.wait([
+        context.read<TruckService>().loadTrucks(),
+        context.read<RentalService>().loadRentals(),
+        context.read<MaintenanceService>().loadMaintenanceRequests(),
+        context.read<DamageService>().loadDamageReports(),
+      ]);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
