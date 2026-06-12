@@ -42,6 +42,6 @@ jobs:
       - name: Deploy Cloud Functions
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
-          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools@latest deploy --only functions --project yo1eb1bbk73987wbjimgktmu6wt50z --non-interactive
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools@latest deploy --only functions --project yo1eb1bbk73987wbjimgktmu6wt50z --non-interactive --force
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
