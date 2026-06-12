@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_truck/models/maintenance_request.dart';
+import 'package:galaxy_truck/services/driver_service.dart';
 import 'package:galaxy_truck/services/maintenance_service.dart';
 import 'package:galaxy_truck/services/truck_service.dart';
 import 'package:galaxy_truck/theme.dart';
@@ -22,6 +23,7 @@ class _MaintenanceRequestsScreenState extends State<MaintenanceRequestsScreen> {
       if (!mounted) return;
       context.read<MaintenanceService>().loadMaintenanceRequests();
       context.read<TruckService>().loadTrucks();
+      context.read<DriverService>().loadDrivers();
     });
   }
 
@@ -78,6 +80,7 @@ class _MaintenanceRequestsScreenState extends State<MaintenanceRequestsScreen> {
   Widget build(BuildContext context) {
     final maintenance = context.watch<MaintenanceService>();
     final trucks = context.watch<TruckService>();
+    final driverSvc = context.watch<DriverService>();
     final cs = Theme.of(context).colorScheme;
     final items = [...maintenance.maintenanceRequests]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
@@ -100,6 +103,7 @@ class _MaintenanceRequestsScreenState extends State<MaintenanceRequestsScreen> {
               itemBuilder: (context, i) {
                 final r = items[i];
                 final truck = trucks.getTruckById(r.truckId);
+                final driverName = driverSvc.getDriverByUserId(r.driverId)?.fullName ?? r.driverId;
                 final urgent = r.urgencyLevel != UrgencyLevel.normal;
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -124,7 +128,7 @@ class _MaintenanceRequestsScreenState extends State<MaintenanceRequestsScreen> {
                                   Text(truck?.displayName ?? 'Truck ${r.truckId}', style: context.textStyles.titleMedium?.semiBold),
                                   const SizedBox(height: 2),
                                   Text('Category: ${r.category.name}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-                                  Text('Driver: ${r.driverId}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+                                  Text('Driver: $driverName', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                                   Text('Created: ${DateFormat('dd MMM yyyy, h:mm a').format(r.createdAt)}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                                 ],
                               ),
