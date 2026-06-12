@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:galaxy_truck/models/damage_report.dart';
 import 'package:galaxy_truck/services/damage_service.dart';
+import 'package:galaxy_truck/services/driver_service.dart';
 import 'package:galaxy_truck/services/truck_service.dart';
 import 'package:galaxy_truck/theme.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +24,7 @@ class _DamageReportsScreenState extends State<DamageReportsScreen> {
       if (!mounted) return;
       context.read<DamageService>().loadDamageReports();
       context.read<TruckService>().loadTrucks();
+      context.read<DriverService>().loadDrivers();
     });
   }
 
@@ -30,6 +32,7 @@ class _DamageReportsScreenState extends State<DamageReportsScreen> {
   Widget build(BuildContext context) {
     final damage = context.watch<DamageService>();
     final trucks = context.watch<TruckService>();
+    final driverSvc = context.watch<DriverService>();
     final cs = Theme.of(context).colorScheme;
     final items = [...damage.damageReports]..sort((a, b) => b.reportedAt.compareTo(a.reportedAt));
 
@@ -52,6 +55,7 @@ class _DamageReportsScreenState extends State<DamageReportsScreen> {
               itemBuilder: (context, i) {
                 final r = items[i];
                 final truck = trucks.getTruckById(r.truckId);
+                final driverName = driverSvc.getDriverByUserId(r.driverId)?.fullName ?? r.driverId;
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   child: Padding(
@@ -75,7 +79,7 @@ class _DamageReportsScreenState extends State<DamageReportsScreen> {
                                   Text(truck?.displayName ?? 'Truck ${r.truckId}', style: context.textStyles.titleMedium?.semiBold),
                                   const SizedBox(height: 2),
                                   Text('Type: ${r.damageType.name}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-                                  Text('Driver: ${r.driverId}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+                                  Text('Driver: $driverName', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                                   Text('Reported: ${DateFormat('dd MMM yyyy, h:mm a').format(r.reportedAt)}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                                 ],
                               ),
