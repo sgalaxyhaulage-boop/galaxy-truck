@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_truck/models/rental.dart';
+import 'package:galaxy_truck/services/driver_service.dart';
 import 'package:galaxy_truck/services/rental_service.dart';
 import 'package:galaxy_truck/services/truck_service.dart';
 import 'package:galaxy_truck/theme.dart';
@@ -24,6 +25,7 @@ class _RentalApprovalsScreenState extends State<RentalApprovalsScreen> {
       if (!mounted) return;
       await context.read<RentalService>().loadRentals();
       await context.read<TruckService>().loadTrucks();
+      await context.read<DriverService>().loadDrivers();
     });
   }
 
@@ -86,6 +88,7 @@ class _RentalApprovalsScreenState extends State<RentalApprovalsScreen> {
   Widget build(BuildContext context) {
     final rentals = context.watch<RentalService>();
     final trucks = context.watch<TruckService>();
+    final driverSvc = context.watch<DriverService>();
     final cs = Theme.of(context).colorScheme;
     final pending = rentals.pendingRentals..sort((a, b) => b.requestedAt.compareTo(a.requestedAt));
 
@@ -108,6 +111,7 @@ class _RentalApprovalsScreenState extends State<RentalApprovalsScreen> {
               itemBuilder: (context, i) {
                 final r = pending[i];
                 final truck = trucks.getTruckById(r.truckId);
+                final driverName = driverSvc.getDriverByUserId(r.driverId)?.fullName ?? r.driverId;
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   child: Padding(
@@ -130,7 +134,7 @@ class _RentalApprovalsScreenState extends State<RentalApprovalsScreen> {
                                 children: [
                                   Text(truck?.displayName ?? 'Truck ${r.truckId}', style: context.textStyles.titleMedium?.semiBold),
                                   const SizedBox(height: 2),
-                                  Text('Driver: ${r.driverId}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+                                  Text('Driver: $driverName', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                                   Text('Requested: ${DateFormat('dd MMM yyyy, h:mm a').format(r.requestedAt)}', style: context.textStyles.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
                                 ],
                               ),
