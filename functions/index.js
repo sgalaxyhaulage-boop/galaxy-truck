@@ -8,13 +8,12 @@ initializeApp();
 const db = getFirestore();
 
 const WIXTRAC_API = "https://point.wixtrac.com/wialon/ajax.html";
-const WIXTRAC_USER = "galaxy";
-const WIXTRAC_PASS = "Gora6016";
+const WIXTRAC_TOKEN = "436224669d360af1d1012a18442900b1BD877698F1D50571F122BBCBBCA0DDA3612BEBAB";
 
 async function wixtracLogin() {
   const params = new URLSearchParams({
     svc: "core/login",
-    params: JSON.stringify({ user: WIXTRAC_USER, password: WIXTRAC_PASS, token: "" }),
+    params: JSON.stringify({ user: "", password: "", token: WIXTRAC_TOKEN }),
   });
   const res = await axios.post(WIXTRAC_API, params.toString(), {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
